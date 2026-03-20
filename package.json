@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "3Dprint MD — сайт 3D печати",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   }
 }
