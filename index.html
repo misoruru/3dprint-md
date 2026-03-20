@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3Dprint MD - Premium 3D Printing Services</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <canvas id="starryCanvas"></canvas>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">3Dprint MD</div>
+            <ul class="nav-links">
+                <li><a href="#services">Для кого</a></li>
+                <li><a href="#popular">Популярное</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="#portfolio">Портфолио</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Детализированные 3D фигурки и модели на заказ в Молдове</h1>
+                <p>DLP 3D-печать смолой с высокой детализацией.  
+                    Фигурки, миниатюры и модели по фото — от идеи до готового изделия за 3–5 дней.</p>
+                <a href="javascript:void(0)" onclick="openSelectionModal()" class="cta-button">🚀 ЗАКАЗАТЬ ПРОЕКТ</a>
+            </div>
+            
+            <div class="printer-visual">
+                <div class="printer-glow"></div>
+                <div class="printer-box">
+                    <img src="images/hero-image.png" alt="3D Printed Dragon Warrior" class="hero-image">
+                </div>
+            </div>
+            <small class="hero-note">
+                Без регистрации • Расчёт бесплатно • Ответ в течение 30 минут
+            </small>
+        </div>
+    </section>
+
+    <!-- For Whom Section - MOVED RIGHT AFTER HERO -->
+    <section class="section" id="services">
+        <div class="section-header reveal">
+            <h2>Для кого подойдёт наша 3D печать</h2>
+            <p>Воплощаем идеи в жизнь для разных целей и интересов</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <span class="service-icon">🎮</span>
+                <h3>Геймерам и коллекционерам</h3>
+                <p>Фигурки персонажей, статуэтки, миниатюры с высокой детализацией.</p>
+            </div>
+
+            <div class="service-card reveal">
+                <span class="service-icon">🎁</span>
+                <h3>Тем, кто ищет необычный подарок</h3>
+                <p>Именные фигурки, модели по фото, уникальные изделия.</p>
+            </div>
+
+            <div class="service-card reveal">
+                <span class="service-icon">🎨</span>
+                <h3>Художникам и дизайнерам</h3>
+                <p>Печать авторских моделей и концептов.</p>
+            </div>
+
+            <div class="service-card reveal">
+                <span class="service-icon">🧪</span>
+                <h3>Стартапам и энтузиастам</h3>
+                <p>Прототипы и тестовые детали в высоком качестве.</p>
+            </div>
+
+            <div class="service-card reveal">
+                <span class="service-icon">🧙</span>
+                <h3>Настольные игры и RPG</h3>
+                <p>Миниатюры для D&D, варгеймов и диорам.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Most Popular Section -->
+    <section class="section" id="popular">
+        <div class="section-header reveal">
+            <h2>Популярные модели</h2>
+            <p>Тренды фигурок и коллекционных моделей от нашего сообщества</p>
+        </div>
+        
+        <!-- View All Catalog Button -->
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="catalog.html" class="view-catalog-btn">
+                <span class="btn-icon">📦</span>
+                <span class="btn-text">Весь каталог</span>
+                <span class="btn-arrow">→</span>
+            </a>
+        </div>
+        
+        <div class="carousel-hint">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 12H6M6 12L11 7M6 12L11 17"/>
+            </svg>
+            <span>Листайте карточки или используйте стрелки</span>
+            <svg viewBox="0 0 24 24">
+                <path d="M6 12h12m-6-5l5 5-5 5"/>
+            </svg>
+        </div>
+        <div class="carousel-container">
+            <!-- Left Arrow -->
+            <button class="carousel-nav prev" onclick="scrollCarousel(-1)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            
+            <!-- Right Arrow -->
+            <button class="carousel-nav next" onclick="scrollCarousel(1)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </button>
+            
+            <div class="carousel" id="productCarousel">
+                <!-- Карточки генерируются из productDatabase (js/products.js) -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Gallery -->
+    <section class="section" id="portfolio">
+        <div class="section-header reveal">
+            <h2>Галерея работ</h2>
+            <p>Демонстрация наших лучших смоляных моделей и кастомных проектов</p>
+        </div>
+        <div class="gallery-preview">
+            <button class="gallery-button" onclick="openGalleryModal()">🖼️ Посмотреть портфолио</button>
+            <div class="gallery-hint">Нажмите, чтобы увидеть примеры наших работ</div>
+        </div>
+    </section>
+
+    <!-- FAQ Section - ИСПРАВЛЕННЫЙ -->
+    <section id="faq" class="section reveal">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Часто задаваемые вопросы</h2>
+                <p class="section-subtitle">Ответы на популярные вопросы о наших услугах</p>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Какие материалы вы используете?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Мы используем высококачественные фотополимерные смолы различных типов: стандартные, гибкие, прочные и специализированные. Все материалы безопасны и подходят для различных применений.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Сколько времени занимает печать?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Сроки зависят от размера и сложности модели. Простые объекты готовы за 1-2 дня, сложные проекты могут занять до недели. Мы всегда согласовываем сроки перед началом работы.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Можно ли заказать печать в цвете?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Да! Мы предлагаем печать в различных цветах. Многоцветная печать доступна с небольшой доплатой. Также возможна постобработка с покраской вручную для максимального качества.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Какова минимальная стоимость заказа?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Минимальная стоимость стандартного заказа начинается от 199 MDL. Итоговая цена зависит от размера, сложности модели, выбранного материала и постобработки.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Что если мне не понравится результат?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Перед печатью мы согласовываем модель.  Если дефект возник по нашей вине — перепечатаем бесплатно.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Как происходит оплата?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Оплата производится предоплатой по банковской карте после согласования проекта и цены. После получения оплаты мы начинаем работу над вашим заказом.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Можно ли что-то изменить перед печатью?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Да. Перед запуском мы можем внести правки в размер, позу или детали модели.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Подойдёт ли это для подарка?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Да. Мы часто печатаем фигурки на подарок.  Возможна аккуратная упаковка и нейтральный внешний вид.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Вы только начинаете — можно ли вам доверять?</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Мы — новый проект, поэтому работаем максимально прозрачно: согласовываем модель, показываем этапы и всегда на связи</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Form Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3>Заказ модели</h3>
+
+            <!-- Product Preview -->
+            <div style="display:flex;align-items:center;gap:1.2rem;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.25);border-radius:16px;padding:1rem 1.4rem;margin-bottom:1.8rem;">
+                <div id="productPreviewEmoji" style="font-size:3rem;line-height:1;"></div>
+                <div>
+                    <div id="productPreviewName" style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:0.25rem;"></div>
+                    <div style="font-size:0.9rem;color:var(--text-secondary);">Базовая цена: <span id="productPreviewPrice" style="color:var(--primary-neon);font-weight:600;"></span> MDL</div>
+                </div>
+            </div>
+
+            <form id="productForm" onsubmit="submitOrder(event)">
+                <div class="form-group" style="display:none;">
+                    <label>Товар</label>
+                    <input type="text" id="productName" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Цвет</label>
+                    <select id="productColor" onchange="updateProductPrice()">
+                        <option value="gray">Серый (стандарт)</option>
+                        <option value="multicolor">Разноцветный (+150 MDL, ручная покраска)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Заполнение</label>
+                    <select id="productFill" onchange="updateProductPrice()">
+                        <option value="lattice">Решётка (экономия материала)</option>
+                        <option value="solid">Полное заполнение (+100 MDL, максимальная прочность)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customerName" placeholder="Введите ваше имя" required>
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="customerPhone" placeholder="+373 ..." required>
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="customerAddress" placeholder="Город, улица, дом" required>
+                </div>
+                <div class="form-group">
+                    <label>Особые пожелания (опционально)</label>
+                    <textarea id="customerNotes" rows="3" placeholder="Особые детали, модификации..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--primary-neon);">Итого: <span id="productPrice"></span> MDL</label>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить заказ (предоплата по карте)</button>
+            </form>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>3Dprint MD</h4>
+                <p>Премиальные услуги 3D печати смолой с доставкой по всей Молдове с 2024 года.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Быстрые ссылки</h4>
+                <a href="#how-it-works">Как работаем</a>
+                <a href="#popular">Популярные модели</a>
+                <a href="#services">Услуги</a>
+                <a href="#portfolio">Портфолио</a>
+                <a href="#faq">Вопросы и ответы</a>
+            </div>
+            <div class="footer-section">
+                <h4>Контакты</h4>
+                <p><a href="/cdn-cgi/l/email-protection#ac9fc8dcdec5c2d8c1c882c5c2cac3eccbc1cdc5c082cfc3c1">📧 <span class="__cf_email__" data-cfemail="54673024263d3a2039307a3d3a323b143339353d387a373b39">[email&#160;protected]</span></a></p>
+                <p>📱 +373 60 983 883</p>
+                <p>📍 Бельцы, Молдова</p>
+                <div class="social-links">
+                    <a href="https://t.me/misoruru" target="_blank" class="social-icon" title="Telegram">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M16 0C7.164 0 0 7.164 0 16s7.164 16 16 16 16-7.164 16-16S24.836 0 16 0zm7.49 10.99l-2.68 12.64c-.2.9-.73 1.12-1.48.7l-4.1-3.02-1.98 1.9c-.22.22-.4.4-.82.4l.29-4.14 7.52-6.8c.33-.29-.07-.45-.51-.16l-9.3 5.85-4-1.26c-.87-.27-.89-.87.18-1.29l15.64-6.03c.72-.26 1.36.18 1.12 1.29z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/3dprint.page/" target="_blank" class="social-icon" title="Instagram">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M16 2.88c4.27 0 4.78.02 6.47.09 1.55.07 2.39.33 2.95.55.74.29 1.27.63 1.82 1.18.55.55.9 1.08 1.18 1.82.22.56.48 1.4.55 2.95.07 1.69.09 2.2.09 6.47s-.02 4.78-.09 6.47c-.07 1.55-.33 2.39-.55 2.95-.29.74-.63 1.27-1.18 1.82-.55.55-1.08.9-1.82 1.18-.56.22-1.4.48-2.95.55-1.69.07-2.2.09-6.47.09s-4.78-.02-6.47-.09c-1.55-.07-2.39-.33-2.95-.55-.74-.29-1.27-.63-1.82-1.18-.55-.55-.9-1.08-1.18-1.82-.22-.56-.48-1.4-.55-2.95-.07-1.69-.09-2.2-.09-6.47s.02-4.78.09-6.47c.07-1.55.33-2.39.55-2.95.29-.74.63-1.27 1.18-1.82.55-.55 1.08-.9 1.82-1.18.56-.22 1.4-.48 2.95-.55 1.69-.07 2.2-.09 6.47-.09M16 0c-4.35 0-4.89.02-6.6.1-1.7.08-2.87.35-3.89.74-1.05.41-1.95.96-2.84 1.85-.89.89-1.44 1.79-1.85 2.84-.39 1.02-.66 2.19-.74 3.89C.02 11.11 0 11.65 0 16s.02 4.89.1 6.6c.08 1.7.35 2.87.74 3.89.41 1.05.96 1.95 1.85 2.84.89.89 1.79 1.44 2.84 1.85 1.02.39 2.19.66 3.89.74 1.71.08 2.25.1 6.6.1s4.89-.02 6.6-.1c1.7-.08 2.87-.35 3.89-.74 1.05-.41 1.95-.96 2.84-1.85.89-.89 1.44-1.79 1.85-2.84.39-1.02.66-2.19.74-3.89.08-1.71.1-2.25.1-6.6s-.02-4.89-.1-6.6c-.08-1.7-.35-2.87-.74-3.89-.41-1.05-.96-1.95-1.85-2.84-.89-.89-1.79-1.44-2.84-1.85-1.02-.39-2.19-.66-3.89-.74C20.89.02 20.35 0 16 0z"/>
+                            <path d="M16 7.78c-4.54 0-8.22 3.68-8.22 8.22s3.68 8.22 8.22 8.22 8.22-3.68 8.22-8.22-3.68-8.22-8.22-8.22zm0 13.55c-2.95 0-5.33-2.39-5.33-5.33s2.39-5.33 5.33-5.33 5.33 2.39 5.33 5.33-2.39 5.33-5.33 5.33z"/>
+                            <circle cx="24.54" cy="7.46" r="1.92"/>
+                        </svg>
+                    </a>
+                    <a href="viber://chat?number=%2B37360983883" class="social-icon" title="Viber">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M16 0C7.16 0 0 7.16 0 16c0 8.84 7.16 16 16 16s16-7.16 16-16c0-8.84-7.16-16-16-16zm6.98 20.5c-.34.96-1.68 1.76-2.74 2-.29.06-.67.11-1.94-.12-1.53-.28-3.49-1.12-5.91-3.54-3.05-3.05-3.3-6.14-3.41-6.41-.14-.36.1-1.38.54-2.09.55-.88 1.42-1.4 2.05-1.4.16 0 .3.01.42.02.37.02.56.04.81.62.31.73.98 2.39 1.06 2.56.09.18.14.38.03.61-.11.22-.17.36-.33.56-.17.2-.35.44-.5.59-.17.17-.34.35-.15.68.2.33.88 1.45 1.89 2.35 1.3 1.16 2.4 1.52 2.74 1.69.33.17.53.14.73-.08.2-.23.85-.99 1.08-1.33.23-.33.45-.28.76-.17.31.11 1.98.93 2.32 1.1.33.17.55.25.63.39.09.14.09.8-.25 1.57z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Режим работы</h4>
+                <p>Понедельник - Пятница: 9:00 - 18:00</p>
+                <p>Суббота: 10:00 - 16:00</p>
+                <p>Воскресенье: Выходной</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 3Dprint MD. Все права защищены. | Создано с передовыми технологиями</p>
+        </div>
+    </footer>
+
+    <!-- Selection Modal (Choose Type) -->
+    <div class="modal" id="selectionModal">
+        <div class="modal-content selection-modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3 style="text-align: center;"">Какой результат вам нужен?</h3>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Выберите вариант — мы подскажем и доведём заказ до идеала</p>
+            
+            <div class="selection-grid">
+                <!-- Standard Option -->
+                <div class="selection-option" onclick="selectOrderType('standard')">
+                    <span class="selection-badge">Стандарт</span>
+                    <span class="selection-icon">📦</span>
+                    <h4>Готовая 3D модель</h4>
+                    <p>У вас уже есть готовый файл 3D модели? Отправьте нам и мы напечатаем его с максимальной точностью.</p>
+                    
+                    <ul class="selection-features">
+                        <li>Поддержка форматов STL, OBJ, 3MF</li>
+                        <li>Высокая детализация печати</li>
+                        <li>Быстрая обработка заказа</li>
+                        <li>Доставка за 3-5 дней</li>
+                    </ul>
+
+                    <div class="selection-price">
+                        <div class="selection-price-label">Стоимость от</div>
+                        <div class="selection-price-amount">199 MDL</div>
+                    </div>
+                </div>
+
+                <!-- Premium Option -->
+                <div class="selection-option" onclick="selectOrderType('premium')">
+                    <span class="selection-badge premium">Премиум</span>
+                    <span class="selection-icon">🎨</span>
+                    <h4>Создание из фото</h4>
+                    <p>Отправьте нам фотографию, и наша команда создаст профессиональную 3D модель специально для вас.</p>
+                    
+                    <ul class="selection-features">
+                        <li>3D моделирование с нуля</li>
+                        <li>Консультация дизайнера</li>
+                        <li>Правки и корректировки</li>
+                        <li>Высокодетализированная печать</li>
+                        <li>Доставка за 5-7 дней</li>
+                    </ul>
+
+                    <div class="selection-price">
+                        <div class="selection-price-label">Стоимость от</div>
+                        <div class="selection-price-amount">599 MDL</div>
+                    </div>
+                </div>
+
+                <!-- 3D Human Copy Option -->
+                <div class="selection-option" onclick="selectOrderType('human-copy')">
+                    <span class="selection-badge exclusive">Эксклюзив</span>
+                    <span class="selection-icon">👤</span>
+                    <h4>3D копия человека</h4>
+                    <p>Создадим реалистичную 3D фигурку человека по фотографиям. Идеальный подарок или коллекционная вещь!</p>
+                    
+                    <ul class="selection-features">
+                        <li>Фотореалистичная детализация</li>
+                        <li>Моделирование по 3-5 фото</li>
+                        <li>Точная передача черт лица</li>
+                        <li>Выбор позы и размера</li>
+                        <li>Премиум упаковка</li>
+                        <li>Доставка за 7-10 дней</li>
+                    </ul>
+
+                    <div class="selection-price">
+                        <div class="selection-price-label">Стоимость от</div>
+                        <div class="selection-price-amount">899 MDL</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Type Modal -->
+    <div class="modal" id="orderTypeModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3 id="modalTitle">Быстрый заказ</h3>
+            <form id="orderTypeForm">
+                <input type="hidden" id="orderType" value="">
+                
+                <div class="form-group">
+                    <label>Тип заказа</label>
+                    <input type="text" id="orderTypeDisplay" readonly>
+                </div>
+
+                <div class="form-group" id="fileUploadGroup">
+                    <label id="uploadLabel">Загрузить файл</label>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept=".stl,.obj,.3mf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+                        <div class="upload-icon">📤</div>
+                        <div class="upload-text" id="uploadText">Нажмите для загрузки или перетащите файл сюда</div>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customerName" placeholder="Введите ваше имя" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="phoneNumber" placeholder="+373 ..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="deliveryAddress" placeholder="Город, улица, дом" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Размер модели (опционально)</label>
+                    <select id="modelSize">
+                        <option value="">Выберите размер</option>
+                        <option value="small">Маленький (до 5см) - базовая цена</option>
+                        <option value="medium">Средний (5-10см) - +100 MDL</option>
+                        <option value="large">Большой (10-15см) - +250 MDL</option>
+                        <option value="xlarge">Очень большой (15см+) - индивидуальный расчет</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Особые пожелания (опционально)</label>
+                    <textarea id="specialRequests" rows="3" placeholder="Цветовые предпочтения, кастомные модификации..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--primary-neon);">Ориентировочная стоимость: <span id="estimatedPrice"></span></label>
+                </div>
+
+                <button type="submit" class="submit-btn">Отправить заказ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Order Modal -->
+    <!-- Product Detail Modal (View Product Details) -->
+    <div class="modal" id="productDetailModal">
+        <div class="modal-content product-detail-modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <div class="product-detail-container">
+                <div class="product-detail-gallery">
+                    <div class="product-main-image" id="productDetailMainImage">
+                        🐉
+                    </div>
+                    <button class="gallery-nav-btn prev" onclick="changeProductImage(-1)">‹</button>
+                    <button class="gallery-nav-btn next" onclick="changeProductImage(1)">›</button>
+                    <div class="gallery-thumbnails" id="productThumbnails">
+                        <!-- Thumbnails will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="product-detail-info">
+                    <h2 class="product-detail-title" id="productDetailTitle">Воин-Дракон</h2>
+                    <div class="product-detail-price" id="productDetailPrice">349 MDL</div>
+                    
+                    <div class="product-detail-specs">
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Материал:</span>
+                            <span class="product-spec-value" id="productMaterial">Фотополимерная смола</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Размер:</span>
+                            <span class="product-spec-value" id="productSize">12-15 см</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Время печати:</span>
+                            <span class="product-spec-value" id="productTime">8-12 часов</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Доступные цвета:</span>
+                            <span class="product-spec-value" id="productColors">Серый, Многоцветный</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-detail-description" id="productDetailDescription">
+                        Эпическая фэнтези-модель воина с детализированной драконьей броней. 
+                        Идеально подходит для коллекционеров и любителей настольных игр. 
+                        Высокая детализация, прочная конструкция, возможность покраски.
+                    </div>
+                    
+                    <div class="product-detail-actions">
+                        <button class="product-detail-btn primary" onclick="orderFromDetail()">
+                            🛒 Заказать сейчас
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Gallery Modal -->
+    <div class="modal" id="galleryModal">
+        <div class="modal-content gallery-modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3>Портфолио наших работ</h3>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Примеры высокодетализированных смоляных моделей</p>
+            
+            <div class="gallery">
+                <div class="gallery-item">🗿</div>
+                <div class="gallery-item">🦖</div>
+                <div class="gallery-item">👾</div>
+                <div class="gallery-item">🎭</div>
+                <div class="gallery-item">⚔️</div>
+                <div class="gallery-item">🏆</div>
+                <div class="gallery-item">🎪</div>
+                <div class="gallery-item">🌟</div>
+                <div class="gallery-item">🎨</div>
+                <div class="gallery-item">🦄</div>
+                <div class="gallery-item">👑</div>
+                <div class="gallery-item">🔮</div>
+                <div class="gallery-item">🎯</div>
+                <div class="gallery-item">🎸</div>
+                <div class="gallery-item">⚡</div>
+                <div class="gallery-item">💎</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    var currentProductData = null;
+    var currentImageIndex  = 0;
+
+    function isImageUrl(str) {
+        return str && (str.startsWith('data:') || str.startsWith('http') ||
+                       str.startsWith('/') || str.startsWith('images/'));
+    }
+
+    function renderImageInto(el, img) {
+        if (!el) return;
+        if (isImageUrl(img)) {
+            el.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="">';
+        } else {
+            el.innerHTML = '';
+            el.textContent = img || '';
+        }
+    }
+
+    function renderCarousel() {
+        var carousel = document.getElementById('productCarousel');
+        if (!carousel) return;
+        var html = '';
+        Object.keys(productDatabase).forEach(function(key) {
+            var p = productDatabase[key];
+            if (p.featured === false) return;
+            var img = (p.images && p.images[0]) || '';
+            var imgHtml = isImageUrl(img)
+                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+                : '<span style="font-size:5rem">' + (img || '') + '</span>';
+            var desc = (p.description || '').slice(0, 60) + '...';
+            html += '<div class="product-card" data-product-key="' + key + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
+                  + '<div class="product-image">' + imgHtml + '</div>'
+                  + '<div class="product-info">'
+                  + '<div class="product-name">' + p.name + '</div>'
+                  + '<div class="product-desc">' + desc + '</div>'
+                  + '<div class="product-footer">'
+                  + '<div class="price">' + p.price + ' MDL</div>'
+                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openProductModal(p.name,p.price,isImageUrl(p.images[0])?p.images[0]:p.images[0])">Заказать</button>'
+                  + '</div></div></div>';
+        });
+        carousel.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
+    }
+
+    function renderProductsGrid() {
+        var grid = document.getElementById('productsGrid');
+        if (!grid) return;
+        var keys = Object.keys(productDatabase);
+        var html = '';
+        keys.forEach(function(key) {
+            var p = productDatabase[key];
+            var img = (p.images && p.images[0]) || '';
+            var imgHtml = isImageUrl(img)
+                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+                : '<span style="font-size:5rem">' + (img || '') + '</span>';
+            var genre = p.genre || 'other';
+            html += '<div class="product-card" data-product-key="' + key + '" data-genre="' + genre + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
+                  + '<div class="product-image">' + imgHtml + '</div>'
+                  + '<div class="product-info">'
+                  + '<span class="product-tag">' + genre + '</span>'
+                  + '<div class="product-name">' + p.name + '</div>'
+                  + '<div class="product-description">' + (p.description || '') + '</div>'
+                  + '<div class="product-meta">'
+                  + '<div class="meta-item"><span>📏</span><span>' + (p.size || '—') + '</span></div>'
+                  + '<div class="meta-item"><span>⏱️</span><span>' + (p.time || '—') + '</span></div>'
+                  + '</div>'
+                  + '<div class="product-footer">'
+                  + '<span class="price">' + p.price + ' MDL</span>'
+                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openOrderModal(p.name,p.price,p.images[0])">Заказать</button>'
+                  + '</div></div></div>';
+        });
+        grid.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
+        var rc = document.getElementById('resultsCount');
+        if (rc) rc.textContent = keys.length;
+    }
+
+    function openProductDetailModal(productKey) {
+        currentProductData = productDatabase[productKey];
+        if (!currentProductData) return;
+        currentImageIndex = 0;
+        document.getElementById('productDetailTitle').textContent       = currentProductData.name;
+        document.getElementById('productDetailPrice').textContent       = currentProductData.price + ' MDL';
+        document.getElementById('productMaterial').textContent          = currentProductData.material   || '';
+        document.getElementById('productSize').textContent              = currentProductData.size        || '';
+        document.getElementById('productTime').textContent              = currentProductData.time        || '';
+        document.getElementById('productColors').textContent            = currentProductData.colors      || '';
+        document.getElementById('productDetailDescription').textContent = currentProductData.description || '';
+        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[0]);
+        var thumbs = document.getElementById('productThumbnails');
+        thumbs.innerHTML = '';
+        currentProductData.images.forEach(function(img, i) {
+            var t = document.createElement('div');
+            t.className = 'gallery-thumbnail' + (i === 0 ? ' active' : '');
+            if (isImageUrl(img)) {
+                t.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" alt="">';
+            } else {
+                t.textContent = img;
+            }
+            t.onclick = function() { setProductImage(i); };
+            thumbs.appendChild(t);
+        });
+        document.getElementById('productDetailModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function changeProductImage(direction) {
+        if (!currentProductData) return;
+        currentImageIndex += direction;
+        if (currentImageIndex < 0) currentImageIndex = currentProductData.images.length - 1;
+        if (currentImageIndex >= currentProductData.images.length) currentImageIndex = 0;
+        setProductImage(currentImageIndex);
+    }
+
+    function setProductImage(index) {
+        if (!currentProductData) return;
+        currentImageIndex = index;
+        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[index]);
+        document.querySelectorAll('.gallery-thumbnail').forEach(function(t, i) {
+            t.classList.toggle('active', i === index);
+        });
+    }
+
+    function orderFromDetail() {
+        if (!currentProductData) return;
+        document.getElementById('productDetailModal').classList.remove('active');
+        var img = currentProductData.images ? currentProductData.images[0] : '';
+        openProductModal(currentProductData.name, currentProductData.price, img);
+    }
+
+    loadProducts();
+    </script>
+    <script src="js/index.js"></script>
+</body>
+</html>

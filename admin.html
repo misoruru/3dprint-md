@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — 3Dprint MD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #080b10;
+            --surface:   #0f1318;
+            --surface2:  #161b23;
+            --border:    rgba(0,240,255,.12);
+            --border2:   rgba(0,240,255,.25);
+            --cyan:      #00f0ff;
+            --pink:      #ff2d78;
+            --purple:    #9d4edd;
+            --green:     #00ff88;
+            --yellow:    #ffd600;
+            --text:      #e8eaf0;
+            --muted:     #6b7280;
+            --danger:    #ff4444;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8,11,16,.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border2);
+            padding: .9rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 1.2rem; }
+        .topbar-logo {
+            font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--cyan), var(--pink));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .topbar-badge {
+            font-size: .7rem; padding: .25rem .6rem;
+            background: rgba(0,240,255,.1); border: 1px solid var(--border2);
+            border-radius: 4px; color: var(--cyan); letter-spacing: 1px;
+        }
+        .topbar-right { display: flex; gap: .8rem; }
+        .topbar-link {
+            padding: .5rem 1rem; border-radius: 8px; font-size: .8rem;
+            text-decoration: none; transition: all .2s;
+            border: 1px solid var(--border); color: var(--muted);
+        }
+        .topbar-link:hover { border-color: var(--cyan); color: var(--cyan); }
+        .topbar-link.primary {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: #000; border-color: transparent; font-weight: 600;
+        }
+        .topbar-link.primary:hover { opacity: .85; color: #000; }
+
+        /* ── Layout ── */
+        .layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            min-height: calc(100vh - 57px);
+        }
+
+        /* ── Sidebar (product list) ── */
+        .sidebar {
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+        }
+        .sidebar-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-title {
+            font-family: 'Syne', sans-serif; font-size: .85rem;
+            font-weight: 700; color: var(--muted); letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .count-badge {
+            background: rgba(0,240,255,.1); border: 1px solid var(--border2);
+            color: var(--cyan); font-size: .75rem; padding: .2rem .5rem;
+            border-radius: 20px; min-width: 24px; text-align: center;
+        }
+
+        .add-btn {
+            margin: 1rem 1.5rem;
+            padding: .8rem;
+            background: rgba(0,255,136,.08);
+            border: 1px dashed rgba(0,255,136,.3);
+            border-radius: 10px;
+            color: var(--green);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem; cursor: pointer;
+            transition: all .2s; width: calc(100% - 3rem);
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+        }
+        .add-btn:hover {
+            background: rgba(0,255,136,.15);
+            border-color: var(--green);
+            transform: translateY(-1px);
+        }
+
+        .product-list { flex: 1; overflow-y: auto; padding: 0 1rem 1rem; }
+        .product-list::-webkit-scrollbar { width: 4px; }
+        .product-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+        .product-item {
+            padding: .9rem 1rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all .15s;
+            display: flex; align-items: center; gap: .9rem;
+            margin-bottom: .4rem;
+            position: relative;
+        }
+        .product-item:hover { background: var(--surface); border-color: var(--border); }
+        .product-item.active {
+            background: var(--surface2);
+            border-color: var(--border2);
+        }
+        .product-item.active::before {
+            content: '';
+            position: absolute; left: 0; top: 20%; bottom: 20%;
+            width: 2px; background: var(--cyan); border-radius: 0 2px 2px 0;
+        }
+        .item-emoji {
+            width: 44px; height: 44px; border-radius: 10px;
+            background: rgba(255,255,255,.04); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .item-emoji img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; }
+        .item-info { flex: 1; min-width: 0; }
+        .item-name {
+            font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 700;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .item-price { font-size: .75rem; color: var(--cyan); margin-top: .15rem; }
+        .item-delete {
+            opacity: 0; transition: opacity .15s;
+            background: none; border: none; color: var(--danger);
+            cursor: pointer; font-size: 1.1rem; padding: .2rem .4rem;
+            border-radius: 6px; flex-shrink: 0;
+        }
+        .product-item:hover .item-delete { opacity: 1; }
+        .item-delete:hover { background: rgba(255,68,68,.1); }
+
+        /* ── Editor (right panel) ── */
+        .editor {
+            display: flex; flex-direction: column;
+            background: var(--surface);
+        }
+        .editor-header {
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .editor-title {
+            font-family: 'Syne', sans-serif; font-size: .85rem;
+            font-weight: 700; color: var(--muted); letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .save-btn {
+            padding: .55rem 1.4rem;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border: none; border-radius: 8px;
+            color: #000; font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem; font-weight: 600; cursor: pointer;
+            transition: all .2s; display: flex; align-items: center; gap: .4rem;
+        }
+        .save-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,240,255,.3); }
+        .save-btn:active { transform: none; }
+
+        .editor-empty {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 1rem;
+            color: var(--muted);
+        }
+        .editor-empty-icon { font-size: 3rem; opacity: .3; }
+        .editor-empty p { font-size: .9rem; }
+
+        .editor-body { flex: 1; overflow-y: auto; padding: 2rem; }
+        .editor-body::-webkit-scrollbar { width: 4px; }
+        .editor-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+        /* ── Form grid ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+        .form-grid .full { grid-column: 1 / -1; }
+
+        .field { display: flex; flex-direction: column; gap: .4rem; }
+        .field label {
+            font-size: .72rem; color: var(--cyan); letter-spacing: 1.5px;
+            text-transform: uppercase; font-weight: 600;
+        }
+        .field input,
+        .field textarea,
+        .field select {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .88rem; padding: .7rem .9rem;
+            transition: all .2s; outline: none;
+            width: 100%;
+        }
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0,240,255,.08);
+        }
+        .field textarea { resize: vertical; min-height: 90px; }
+        .field select option { background: #0f1318; }
+
+        /* ── Image section ── */
+        .images-section { margin-top: 1.8rem; }
+        .images-label {
+            font-size: .72rem; color: var(--cyan); letter-spacing: 1.5px;
+            text-transform: uppercase; font-weight: 600; margin-bottom: .8rem;
+            display: block;
+        }
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: .8rem;
+        }
+        .image-slot {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            border: 1px dashed var(--border2);
+            background: var(--bg);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; cursor: pointer;
+            transition: all .2s; overflow: hidden;
+        }
+        .image-slot:hover { border-color: var(--cyan); background: rgba(0,240,255,.04); }
+        .image-slot .slot-emoji { font-size: 2.2rem; }
+        .image-slot img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover; border-radius: 9px;
+        }
+        .image-slot .slot-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,.6); border-radius: 9px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: .3rem;
+            opacity: 0; transition: opacity .2s;
+            font-size: .7rem; color: #fff;
+        }
+        .image-slot:hover .slot-overlay { opacity: 1; }
+        .slot-overlay-icon { font-size: 1.3rem; }
+        .image-slot input[type="file"] {
+            position: absolute; inset: 0;
+            opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .slot-remove {
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(255,68,68,.8); border: none; border-radius: 4px;
+            color: #fff; font-size: .7rem; padding: .1rem .35rem;
+            cursor: pointer; z-index: 2; display: none;
+        }
+        .image-slot.has-image .slot-remove { display: block; }
+        .image-slot .slot-hint { font-size: .65rem; color: var(--muted); margin-top: .3rem; }
+
+        /* ── Preview section ── */
+        .preview-section {
+            margin-top: 1.8rem;
+            padding: 1.2rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .preview-label {
+            font-size: .72rem; color: var(--muted); letter-spacing: 1.5px;
+            text-transform: uppercase; margin-bottom: 1rem; display: block;
+        }
+        .preview-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden;
+            display: flex; max-width: 360px;
+        }
+        .preview-img {
+            width: 100px; height: 100px;
+            background: rgba(0,240,255,.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.8rem; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .preview-img img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-info { padding: .9rem 1rem; flex: 1; }
+        .preview-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; }
+        .preview-desc { font-size: .75rem; color: var(--muted); margin: .3rem 0; line-height: 1.5; }
+        .preview-price {
+            font-size: 1.1rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--cyan), var(--pink));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            padding: .8rem 1.4rem; border-radius: 10px;
+            font-size: .85rem; font-weight: 600;
+            transform: translateY(100px); opacity: 0;
+            transition: all .3s cubic-bezier(.34,1.56,.64,1);
+            z-index: 9999; pointer-events: none;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: rgba(0,255,136,.15); border: 1px solid var(--green); color: var(--green); }
+        .toast.error   { background: rgba(255,68,68,.15);  border: 1px solid var(--danger); color: var(--danger); }
+
+        /* ── Divider ── */
+        .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+        /* ── Genre tag ── */
+        .genre-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+        .genre-tag {
+            padding: .3rem .8rem; border-radius: 20px;
+            border: 1px solid var(--border); font-size: .75rem;
+            cursor: pointer; transition: all .2s; background: none; color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .genre-tag.selected {
+            background: rgba(0,240,255,.1); border-color: var(--cyan); color: var(--cyan);
+        }
+
+
+        /* ── Featured toggle ── */
+        .featured-toggle {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all .2s;
+            user-select: none;
+        }
+        .featured-toggle:hover { border-color: var(--cyan); }
+        .featured-toggle.on {
+            border-color: rgba(0,255,136,.4);
+            background: rgba(0,255,136,.05);
+        }
+        .toggle-switch {
+            width: 42px; height: 24px; border-radius: 12px;
+            background: var(--border); position: relative;
+            transition: background .2s; flex-shrink: 0;
+        }
+        .featured-toggle.on .toggle-switch { background: var(--green); }
+        .toggle-knob {
+            position: absolute; top: 3px; left: 3px;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #fff; transition: transform .2s;
+        }
+        .featured-toggle.on .toggle-knob { transform: translateX(18px); }
+        .toggle-label { font-size: .85rem; }
+        .toggle-label strong { color: var(--green); }
+        .toggle-label span { color: var(--muted); font-size: .75rem; display: block; margin-top: .1rem; }
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); max-height: 280px; }
+            .images-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── Login screen ── */
+        #loginScreen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--surface); border: 1px solid var(--border2);
+            border-radius: 20px; padding: 2.5rem 2rem;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 0 60px rgba(0,240,255,.08);
+        }
+        .login-logo {
+            font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--cyan), var(--pink));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center; margin-bottom: .4rem;
+        }
+        .login-sub { text-align: center; font-size: .75rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; }
+        .login-field { margin-bottom: 1rem; }
+        .login-field label { display: block; font-size: .7rem; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: .4rem; }
+        .login-field input {
+            width: 100%; padding: .75rem 1rem;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text);
+            font-family: 'JetBrains Mono', monospace; font-size: .9rem;
+            outline: none; transition: border-color .2s;
+        }
+        .login-field input:focus { border-color: var(--cyan); }
+        .login-btn {
+            width: 100%; padding: .85rem;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border: none; border-radius: 10px; color: #000;
+            font-family: 'JetBrains Mono', monospace; font-size: .95rem; font-weight: 700;
+            cursor: pointer; margin-top: .5rem; transition: opacity .2s;
+        }
+        .login-btn:hover { opacity: .85; }
+        .login-error { color: var(--danger); font-size: .8rem; text-align: center; margin-top: .8rem; min-height: 1.2em; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+        .login-shake { animation: shake .4s ease; }
+    </style>
+</head>
+<body>
+<!-- Login Screen -->
+<div id="loginScreen">
+    <div class="login-box" id="loginBox">
+        <div class="login-logo">3Dprint MD</div>
+        <div class="login-sub">Admin Panel</div>
+        <div class="login-field">
+            <label>Имя пользователя</label>
+            <input type="text" id="loginUser" placeholder="username" autocomplete="username">
+        </div>
+        <div class="login-field">
+            <label>Пароль</label>
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
+                   onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="login-btn" onclick="doLogin()">Войти →</button>
+        <div class="login-error" id="loginError"></div>
+    </div>
+</div>
+
+<!-- Admin Wrapper (hidden until logged in) -->
+<div id="adminWrapper" style="display:none">
+
+<!-- Top Bar -->
+<div class="topbar">
+    <div class="topbar-left">
+        <span class="topbar-logo">3Dprint MD</span>
+        <span class="topbar-badge">ADMIN</span>
+    </div>
+    <div class="topbar-right">
+        <a href="index.html" class="topbar-link" target="_blank">↗ Главная</a>
+        <a href="catalog.html" class="topbar-link" target="_blank">↗ Каталог</a>
+        <button class="topbar-link primary" onclick="exportProducts()">⬇ Экспорт JS</button>
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Товары</span>
+            <span class="count-badge" id="countBadge">0</span>
+        </div>
+        <button class="add-btn" onclick="addNewProduct()">＋ Добавить товар</button>
+        <div class="product-list" id="productList"></div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor">
+        <div class="editor-header">
+            <span class="editor-title">Редактор</span>
+            <button class="save-btn" onclick="saveProduct()" id="saveBtn" style="display:none">
+                ✓ Сохранить
+            </button>
+        </div>
+        <div class="editor-empty" id="editorEmpty">
+            <div class="editor-empty-icon">✏️</div>
+            <p>Выберите товар для редактирования</p>
+            <p style="font-size:.75rem">или добавьте новый</p>
+        </div>
+        <div class="editor-body" id="editorBody" style="display:none">
+
+            <div class="form-grid">
+                <div class="field full">
+                    <label>Название (русское)</label>
+                    <input type="text" id="f-name" placeholder="Воин-Дракон" oninput="updatePreview()">
+                </div>
+                <div class="field">
+                    <label>Цена (MDL)</label>
+                    <input type="number" id="f-price" placeholder="349" oninput="updatePreview()">
+                </div>
+                <div class="field">
+                    <label>Размер</label>
+                    <input type="text" id="f-size" placeholder="12-15 см">
+                </div>
+                <div class="field">
+                    <label>Время печати</label>
+                    <input type="text" id="f-time" placeholder="8-12 часов">
+                </div>
+                <div class="field">
+                    <label>Материал</label>
+                    <input type="text" id="f-material" placeholder="Фотополимерная смола">
+                </div>
+                <div class="field">
+                    <label>Цвета</label>
+                    <input type="text" id="f-colors" placeholder="Серый, Многоцветный">
+                </div>
+                <div class="field full">
+                    <label>Описание</label>
+                    <textarea id="f-desc" placeholder="Описание товара..." oninput="updatePreview()"></textarea>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+                <label>Жанр / категория</label>
+                <div class="genre-row" id="genreRow">
+                    <button class="genre-tag" data-genre="fantasy" onclick="selectGenre(this)">⚔️ Fantasy</button>
+                    <button class="genre-tag" data-genre="scifi"   onclick="selectGenre(this)">🚀 Sci-Fi</button>
+                    <button class="genre-tag" data-genre="cute"    onclick="selectGenre(this)">🐱 Cute</button>
+                    <button class="genre-tag" data-genre="dark"    onclick="selectGenre(this)">💀 Dark</button>
+                    <button class="genre-tag" data-genre="anime"   onclick="selectGenre(this)">✨ Anime</button>
+                    <button class="genre-tag" data-genre="other"   onclick="selectGenre(this)">📦 Other</button>
+                </div>
+            </div>
+
+
+            <div class="divider"></div>
+
+            <div class="field">
+                <label>Видимость</label>
+                <div class="featured-toggle" id="featuredToggle" onclick="toggleFeatured()">
+                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
+                    <div class="toggle-label">
+                        Показывать на главной
+                        <span id="featuredHint">Товар будет виден только в каталоге</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Images -->
+            <div class="images-section">
+                <span class="images-label">Фотографии (до 4 штук)</span>
+                <div class="images-grid" id="imagesGrid">
+                    <!-- slots filled by JS -->
+                </div>
+                <p style="font-size:.72rem; color: var(--muted); margin-top:.6rem;">
+                    💡 Если нет фото — используй эмодзи. Для загрузки фото нажми на слот.
+                </p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Live Preview -->
+            <div class="preview-section">
+                <span class="preview-label">Предпросмотр карточки</span>
+                <div class="preview-card">
+                    <div class="preview-img" id="prevImg">🐉</div>
+                    <div class="preview-info">
+                        <div class="preview-name" id="prevName">Название</div>
+                        <div class="preview-desc" id="prevDesc">Описание товара...</div>
+                        <div class="preview-price" id="prevPrice">349 MDL</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════
+let adminToken = '';
+const ADMIN_USER = 'misoruna';
+const ADMIN_PASS = 'Ss;ods22s';
+const SESSION_KEY = '3dprint_admin_auth';
+
+function doLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    const box   = document.getElementById('loginBox');
+
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        // Генерируем токен из пароля (простой hash для отправки на сервер)
+        adminToken = ADMIN_PASS;  // send raw password
+        sessionStorage.setItem(SESSION_KEY, '1');
+        sessionStorage.setItem('3dprint_token', adminToken);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminWrapper').style.display = 'block';
+        loadProducts();
+    } else {
+        errEl.textContent = 'Неверное имя или пароль';
+        box.classList.remove('login-shake');
+        void box.offsetWidth;
+        box.classList.add('login-shake');
+        document.getElementById('loginPass').value = '';
+    }
+}
+
+function checkAuth() {
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        adminToken = ADMIN_PASS;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminWrapper').style.display = 'block';
+        loadProducts();
+    }
+}
+
+checkAuth();
+
+// ════════════════════════════════════════════
+// DATA — загрузка и сохранение через /api/products
+// ════════════════════════════════════════════
+
+// Токен берётся из переменной окружения на сервере.
+// В админке храним его в sessionStorage после логина.
+const API_URL = '/api/products';
+
+let db = {};
+
+async function loadProducts() {
+    try {
+        showToast('Загружаем товары...', 'success');
+        const res = await fetch(API_URL);
+        db = await res.json();
+        renderSidebar();
+        showToast('Товары загружены ✓', 'success');
+    } catch(e) {
+        showToast('Ошибка загрузки товаров', 'error');
+    }
+}
+
+async function saveProducts(data) {
+    const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + adminToken
+        },
+        body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Ошибка сервера');
+    }
+    return res.json();
+}
+let currentKey = null;
+let imageData = ['', '', '', '']; // base64 or emoji for 4 slots
+
+// ════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════
+function renderSidebar() {
+    const list = document.getElementById('productList');
+    const keys = Object.keys(db);
+    document.getElementById('countBadge').textContent = keys.length;
+
+    list.innerHTML = keys.map(key => {
+        const p = db[key];
+        const firstImg = p.images[0];
+        const isUrl = firstImg && (firstImg.startsWith('data:') || firstImg.startsWith('http') || firstImg.startsWith('/') || firstImg.startsWith('images/'));
+        const imgHtml = isUrl
+            ? `<img src="${firstImg}" alt="">`
+            : firstImg || '📦';
+
+        return `
+        <div class="product-item ${key === currentKey ? 'active' : ''}" onclick="selectProduct('${key}')">
+            <div class="item-emoji">${isUrl ? `<img src="${firstImg}" alt="">` : (firstImg || '📦')}</div>
+            <div class="item-info">
+                <div class="item-name">${p.name}</div>
+                <div class="item-price">${p.price} MDL</div>
+            </div>
+            <button class="item-delete" onclick="deleteProduct(event,'${key}')">🗑</button>
+        </div>`;
+    }).join('');
+}
+
+// ════════════════════════════════════════════
+// SELECT / OPEN EDITOR
+// ════════════════════════════════════════════
+function selectProduct(key) {
+    currentKey = key;
+    const p = db[key];
+
+    document.getElementById('editorEmpty').style.display = 'none';
+    document.getElementById('editorBody').style.display = 'block';
+    document.getElementById('saveBtn').style.display = 'flex';
+
+    // Clear all fields first
+    ['f-name','f-price','f-size','f-time','f-material','f-colors','f-desc'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    document.getElementById('f-name').value     = p.name || '';
+    document.getElementById('f-price').value    = p.price || '';
+    document.getElementById('f-size').value     = p.size || '';
+    document.getElementById('f-time').value     = p.time || '';
+    document.getElementById('f-material').value = p.material || '';
+    document.getElementById('f-colors').value   = p.colors || '';
+
+    // Featured
+    isFeatured = !!p.featured;
+    updateFeaturedUI();
+    document.getElementById('f-desc').value     = p.description || '';
+
+    // Genre
+    document.querySelectorAll('.genre-tag').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.genre === (p.genre || ''));
+    });
+
+    // Images — pad to 4
+    imageData = [...(p.images || []), '', '', '', ''].slice(0, 4);
+    renderImageSlots();
+    updatePreview();
+    renderSidebar();
+}
+
+// ════════════════════════════════════════════
+// IMAGE SLOTS
+// ════════════════════════════════════════════
+function renderImageSlots() {
+    const grid = document.getElementById('imagesGrid');
+    grid.innerHTML = imageData.map((img, i) => {
+        const isUrl = img && (img.startsWith('data:') || img.startsWith('http') || img.startsWith('/') || img.startsWith('images/'));
+        const isEmoji = img && !isUrl;
+        const hasContent = !!img;
+
+        return `
+        <div class="image-slot ${hasContent ? 'has-image' : ''}" id="slot-${i}">
+            ${isUrl ? `<img src="${img}" alt="">` : ''}
+            ${isEmoji ? `<span class="slot-emoji">${img}</span>` : ''}
+            ${!hasContent ? `<span class="slot-emoji" style="opacity:.25;font-size:1.5rem">📷</span><span class="slot-hint">Фото / эмодзи</span>` : ''}
+            <div class="slot-overlay">
+                <span class="slot-overlay-icon">📁</span>
+                <span>Загрузить фото</span>
+            </div>
+            <input type="file" accept="image/*" onchange="handleImageUpload(event,${i})">
+            ${hasContent ? `<button class="slot-remove" onclick="removeImage(event,${i})">✕</button>` : ''}
+        </div>`;
+    }).join('');
+
+    // Also allow setting emoji via prompt on non-file click (double click)
+    imageData.forEach((_, i) => {
+        const slot = document.getElementById(`slot-${i}`);
+        slot.addEventListener('dblclick', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            const emoji = prompt(`Введи эмодзи для слота ${i+1} (или оставь пустым чтобы убрать):`, imageData[i]);
+            if (emoji !== null) {
+                imageData[i] = emoji.trim();
+                renderImageSlots();
+                updatePreview();
+            }
+        });
+    });
+}
+
+function handleImageUpload(e, index) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        imageData[index] = ev.target.result;
+        renderImageSlots();
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage(e, index) {
+    e.stopPropagation();
+    imageData[index] = '';
+    renderImageSlots();
+    updatePreview();
+}
+
+// ════════════════════════════════════════════
+// LIVE PREVIEW
+// ════════════════════════════════════════════
+function updatePreview() {
+    const name  = document.getElementById('f-name').value  || 'Название';
+    const price = document.getElementById('f-price').value || '0';
+    const desc  = document.getElementById('f-desc').value  || 'Описание...';
+    const img   = imageData[0];
+
+    document.getElementById('prevName').textContent  = name;
+    document.getElementById('prevPrice').textContent = price + ' MDL';
+    document.getElementById('prevDesc').textContent  = desc.slice(0, 80) + (desc.length > 80 ? '...' : '');
+
+    const prevImg = document.getElementById('prevImg');
+    const isUrl = img && (img.startsWith('data:') || img.startsWith('http') || img.startsWith('/') || img.startsWith('images/'));
+    if (isUrl) {
+        prevImg.innerHTML = `<img src="${img}" alt="">`;
+    } else {
+        prevImg.textContent = img || '📦';
+    }
+}
+
+
+// ════════════════════════════════════════════
+// FEATURED TOGGLE
+// ════════════════════════════════════════════
+let isFeatured = false;
+
+function toggleFeatured() {
+    isFeatured = !isFeatured;
+    updateFeaturedUI();
+}
+
+function updateFeaturedUI() {
+    const el   = document.getElementById('featuredToggle');
+    const hint = document.getElementById('featuredHint');
+    if (!el) return;
+    if (isFeatured) {
+        el.classList.add('on');
+        hint.textContent = 'Товар появится в карусели на главной';
+    } else {
+        el.classList.remove('on');
+        hint.textContent = 'Товар будет виден только в каталоге';
+    }
+}
+
+// ════════════════════════════════════════════
+// GENRE
+// ════════════════════════════════════════════
+function selectGenre(btn) {
+    document.querySelectorAll('.genre-tag').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+}
+
+function getSelectedGenre() {
+    const sel = document.querySelector('.genre-tag.selected');
+    return sel ? sel.dataset.genre : 'other';
+}
+
+// ════════════════════════════════════════════
+// SAVE
+// ════════════════════════════════════════════
+async function saveProduct() {
+    if (!currentKey) return;
+
+    const name = document.getElementById('f-name').value.trim();
+    if (!name) { showToast('Введи название!', 'error'); return; }
+
+    const cleanImages = imageData.filter(Boolean);
+    if (cleanImages.length === 0) cleanImages.push('📦');
+
+    db[currentKey] = {
+        name,
+        price:       parseInt(document.getElementById('f-price').value) || 0,
+        genre:       getSelectedGenre(),
+        material:    document.getElementById('f-material').value.trim() || 'Фотополимерная смола',
+        size:        document.getElementById('f-size').value.trim(),
+        time:        document.getElementById('f-time').value.trim(),
+        colors:      document.getElementById('f-colors').value.trim(),
+        description: document.getElementById('f-desc').value.trim(),
+        images:      cleanImages,
+        featured:    isFeatured
+    };
+
+    try {
+        document.getElementById('saveBtn').textContent = '⏳ Сохраняем...';
+        await saveProducts(db);
+        renderSidebar();
+        showToast('Сохранено на сервере ✓', 'success');
+    } catch(e) {
+        showToast('Ошибка: ' + e.message, 'error');
+    } finally {
+        document.getElementById('saveBtn').textContent = '✓ Сохранить';
+    }
+}
+
+// ════════════════════════════════════════════
+// ADD NEW
+// ════════════════════════════════════════════
+function addNewProduct() {
+    const key = 'Product_' + Date.now();
+    db[key] = {
+        name: 'Новый товар', price: 299, genre: 'other',
+        material: 'Фотополимерная смола',
+        size: '', time: '', colors: 'Серый, Многоцветный',
+        description: '',
+        images: ['📦']
+    };
+    saveProducts(db);
+    renderSidebar();
+    selectProduct(key);
+    showToast('Товар добавлен', 'success');
+}
+
+// ════════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════════
+async function deleteProduct(e, key) {
+    e.stopPropagation();
+    if (!confirm(`Удалить «${db[key].name}»?`)) return;
+    delete db[key];
+    try {
+        await saveProducts(db);
+        if (currentKey === key) {
+            currentKey = null;
+            document.getElementById('editorEmpty').style.display = 'flex';
+            document.getElementById('editorBody').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'none';
+        }
+        renderSidebar();
+        showToast('Удалено', 'error');
+    } catch(e) {
+        showToast('Ошибка удаления', 'error');
+    }
+}
+
+// ════════════════════════════════════════════
+// EXPORT — скачать products.json
+// ════════════════════════════════════════════
+function exportProducts() {
+    const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'products.json';
+    a.click();
+    showToast('products.json скачан!', 'success');
+}
+
+// ════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+renderSidebar();
+</script>
+</div><!-- /adminWrapper -->
+</body>
+</html>

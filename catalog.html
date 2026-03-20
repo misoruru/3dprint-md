@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог моделей - 3Dprint MD</title>
+    <link rel="stylesheet" href="css/catalog.css">
+</head>
+<body>
+    <canvas id="starryCanvas"></canvas>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">3Dprint MD</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="services.html">Услуги</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="catalog-container">
+        <!-- Header -->
+        <div class="catalog-header">
+            <h1>Каталог 3D моделей</h1>
+            <p>Эксклюзивные фигурки и модели высочайшего качества</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Сортировка</label>
+                    <select id="sortFilter" onchange="applyFilters()">
+                        <option value="popular">Популярные</option>
+                        <option value="price-low">Цена: по возрастанию</option>
+                        <option value="price-high">Цена: по убыванию</option>
+                        <option value="name">По названию</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Цена</label>
+                    <select id="priceFilter" onchange="applyFilters()">
+                        <option value="all">Все цены</option>
+                        <option value="0-300">До 300 MDL</option>
+                        <option value="300-400">300-400 MDL</option>
+                        <option value="400+">От 400 MDL</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Размер</label>
+                    <select id="sizeFilter" onchange="applyFilters()">
+                        <option value="all">Все размеры</option>
+                        <option value="small">Маленький (до 10см)</option>
+                        <option value="medium">Средний (10-15см)</option>
+                        <option value="large">Большой (15см+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Категория</label>
+                <div class="genre-filter">
+                    <button class="genre-btn active" onclick="selectGenre(this, 'all')">Все</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'fantasy')">Фэнтези</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'scifi')">Sci-Fi</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'cute')">Милые</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'dark')">Мрачные</button>
+                </div>
+            </div>
+
+            <button class="reset-btn" onclick="resetFilters()">Сбросить фильтры</button>
+        </div>
+
+        <!-- Results Counter -->
+        <div class="results-counter">
+            <span>Найдено моделей: <span class="count" id="resultsCount">6</span></span>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+                <!-- Карточки генерируются из productDatabase (js/products.js) -->
+            </div>
+        </div>
+    </div>
+
+            <!-- Product 2 - Cyber Cat -->
+            <div class="product-card" data-genre="scifi" data-price="299" data-size="small" data-product-key="Cyber Cat">
+                <div class="product-image">🐱</div>
+                <div class="product-info">
+                    <span class="product-tag">Sci-Fi</span>
+                    <h3 class="product-name">Кибер-Кот</h3>
+                    <p class="product-description">Футуристическая модель с возможностью установки LED-подсветки</p>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>10-12 см</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>6-10 ч</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">299 MDL</span>
+                        <button class="order-btn">Заказать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 - Space Explorer -->
+            <div class="product-card" data-genre="scifi" data-price="399" data-size="large" data-product-key="Space Explorer">
+                <div class="product-image">🚀</div>
+                <div class="product-info">
+                    <span class="product-tag">Sci-Fi</span>
+                    <h3 class="product-name">Космический Исследователь</h3>
+                    <p class="product-description">Детализированная фигурка астронавта с подвижными деталями</p>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>15-18 см</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>10-14 ч</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">399 MDL</span>
+                        <button class="order-btn">Заказать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 - Mystic Wizard -->
+            <div class="product-card" data-genre="fantasy" data-price="329" data-size="medium" data-product-key="Mystic Wizard">
+                <div class="product-image">🧙</div>
+                <div class="product-info">
+                    <span class="product-tag">Фэнтези</span>
+                    <h3 class="product-name">Мистический Маг</h3>
+                    <p class="product-description">Детализированный волшебник с магическими эффектами и мантией</p>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>13-16 см</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>9-12 ч</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">329 MDL</span>
+                        <button class="order-btn">Заказать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 5 - Robo Buddy -->
+            <div class="product-card" data-genre="cute" data-price="279" data-size="small" data-product-key="Robo Buddy">
+                <div class="product-image">🤖</div>
+                <div class="product-info">
+                    <span class="product-tag">Милые</span>
+                    <h3 class="product-name">Робо-Друг</h3>
+                    <p class="product-description">Милый робот-компаньон с шарнирными соединениями</p>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>8-10 см</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>5-8 ч</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">279 MDL</span>
+                        <button class="order-btn">Заказать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 6 - Skull Guardian -->
+            <div class="product-card" data-genre="dark" data-price="349" data-size="medium" data-product-key="Skull Guardian">
+                <div class="product-image">💀</div>
+                <div class="product-info">
+                    <span class="product-tag">Мрачные</span>
+                    <h3 class="product-name">Страж-Череп</h3>
+                    <p class="product-description">Мрачная и детализированная модель стража с черепом</p>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>12-14 см</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>8-11 ч</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">349 MDL</span>
+                        <button class="order-btn">Заказать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal" id="productDetailModal">
+        <div class="modal-content product-detail-modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <div class="product-detail-container">
+                <div class="product-detail-gallery">
+                    <div class="product-main-image" id="productDetailMainImage">
+                        🐉
+                    </div>
+                    <button class="gallery-nav-btn prev" onclick="changeProductImage(-1)">‹</button>
+                    <button class="gallery-nav-btn next" onclick="changeProductImage(1)">›</button>
+                    <div class="gallery-thumbnails" id="productThumbnails">
+                        <!-- Thumbnails will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="product-detail-info">
+                    <h2 class="product-detail-title" id="productDetailTitle">Воин-Дракон</h2>
+                    <div class="product-detail-price" id="productDetailPrice">349 MDL</div>
+                    
+                    <div class="product-detail-specs">
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Материал:</span>
+                            <span class="product-spec-value" id="productMaterial">Фотополимерная смола</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Размер:</span>
+                            <span class="product-spec-value" id="productSize">12-15 см</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Время печати:</span>
+                            <span class="product-spec-value" id="productTime">8-12 часов</span>
+                        </div>
+                        <div class="product-spec-item">
+                            <span class="product-spec-label">Доступные цвета:</span>
+                            <span class="product-spec-value" id="productColors">Серый, Многоцветный</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-detail-description" id="productDetailDescription">
+                        Эпическая фэнтези-модель воина с детализированной драконьей броней. 
+                        Идеально подходит для коллекционеров и любителей настольных игр. 
+                        Высокая детализация, прочная конструкция, возможность покраски.
+                    </div>
+                    
+                    <div class="product-detail-actions">
+                        <button class="product-detail-btn primary" onclick="orderFromDetail()">
+                            🛒 Заказать сейчас
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Form Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3>Заказ модели</h3>
+
+            <!-- Product Preview -->
+            <div style="display:flex;align-items:center;gap:1.2rem;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.25);border-radius:16px;padding:1rem 1.4rem;margin-bottom:1.8rem;">
+                <div id="productPreviewEmoji" style="font-size:3rem;line-height:1;"></div>
+                <div>
+                    <div id="productPreviewName" style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:0.25rem;"></div>
+                    <div style="font-size:0.9rem;color:var(--text-secondary);">Базовая цена: <span id="productPreviewPrice" style="color:var(--primary-neon);font-weight:600;"></span> MDL</div>
+                </div>
+            </div>
+
+            <form id="productForm" onsubmit="submitOrder(event)">
+                <div class="form-group" style="display:none;">
+                    <label>Товар</label>
+                    <input type="text" id="productName" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Цвет</label>
+                    <select id="productColor" onchange="updateProductPrice()">
+                        <option value="gray">Серый (стандарт)</option>
+                        <option value="multicolor">Разноцветный (+150 MDL, ручная покраска)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Заполнение</label>
+                    <select id="productFill" onchange="updateProductPrice()">
+                        <option value="lattice">Решётка (экономия материала)</option>
+                        <option value="solid">Полное заполнение (+100 MDL, максимальная прочность)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customerName" placeholder="Введите ваше имя" required>
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="customerPhone" placeholder="+373 ..." required>
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="customerAddress" placeholder="Город, улица, дом" required>
+                </div>
+                <div class="form-group">
+                    <label>Особые пожелания (опционально)</label>
+                    <textarea id="customerNotes" rows="3" placeholder="Особые детали, модификации..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--primary-neon);">Итого: <span id="productPrice"></span> MDL</label>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить заказ (предоплата по карте)</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    var currentProductData = null;
+    var currentImageIndex  = 0;
+
+    function isImageUrl(str) {
+        return str && (str.startsWith('data:') || str.startsWith('http') ||
+                       str.startsWith('/') || str.startsWith('images/'));
+    }
+
+    function renderImageInto(el, img) {
+        if (!el) return;
+        if (isImageUrl(img)) {
+            el.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="">';
+        } else {
+            el.innerHTML = '';
+            el.textContent = img || '';
+        }
+    }
+
+    function renderCarousel() {
+        var carousel = document.getElementById('productCarousel');
+        if (!carousel) return;
+        var html = '';
+        Object.keys(productDatabase).forEach(function(key) {
+            var p = productDatabase[key];
+            if (p.featured === false) return;
+            var img = (p.images && p.images[0]) || '';
+            var imgHtml = isImageUrl(img)
+                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+                : '<span style="font-size:5rem">' + (img || '') + '</span>';
+            var desc = (p.description || '').slice(0, 60) + '...';
+            html += '<div class="product-card" data-product-key="' + key + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
+                  + '<div class="product-image">' + imgHtml + '</div>'
+                  + '<div class="product-info">'
+                  + '<div class="product-name">' + p.name + '</div>'
+                  + '<div class="product-desc">' + desc + '</div>'
+                  + '<div class="product-footer">'
+                  + '<div class="price">' + p.price + ' MDL</div>'
+                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openProductModal(p.name,p.price,isImageUrl(p.images[0])?p.images[0]:p.images[0])">Заказать</button>'
+                  + '</div></div></div>';
+        });
+        carousel.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
+    }
+
+    function renderProductsGrid() {
+        var grid = document.getElementById('productsGrid');
+        if (!grid) return;
+        var keys = Object.keys(productDatabase);
+        var html = '';
+        keys.forEach(function(key) {
+            var p = productDatabase[key];
+            var img = (p.images && p.images[0]) || '';
+            var imgHtml = isImageUrl(img)
+                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+                : '<span style="font-size:5rem">' + (img || '') + '</span>';
+            var genre = p.genre || 'other';
+            html += '<div class="product-card" data-product-key="' + key + '" data-genre="' + genre + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
+                  + '<div class="product-image">' + imgHtml + '</div>'
+                  + '<div class="product-info">'
+                  + '<span class="product-tag">' + genre + '</span>'
+                  + '<div class="product-name">' + p.name + '</div>'
+                  + '<div class="product-description">' + (p.description || '') + '</div>'
+                  + '<div class="product-meta">'
+                  + '<div class="meta-item"><span>📏</span><span>' + (p.size || '—') + '</span></div>'
+                  + '<div class="meta-item"><span>⏱️</span><span>' + (p.time || '—') + '</span></div>'
+                  + '</div>'
+                  + '<div class="product-footer">'
+                  + '<span class="price">' + p.price + ' MDL</span>'
+                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openOrderModal(p.name,p.price,p.images[0])">Заказать</button>'
+                  + '</div></div></div>';
+        });
+        grid.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
+        var rc = document.getElementById('resultsCount');
+        if (rc) rc.textContent = keys.length;
+    }
+
+    function openProductDetailModal(productKey) {
+        currentProductData = productDatabase[productKey];
+        if (!currentProductData) return;
+        currentImageIndex = 0;
+        document.getElementById('productDetailTitle').textContent       = currentProductData.name;
+        document.getElementById('productDetailPrice').textContent       = currentProductData.price + ' MDL';
+        document.getElementById('productMaterial').textContent          = currentProductData.material   || '';
+        document.getElementById('productSize').textContent              = currentProductData.size        || '';
+        document.getElementById('productTime').textContent              = currentProductData.time        || '';
+        document.getElementById('productColors').textContent            = currentProductData.colors      || '';
+        document.getElementById('productDetailDescription').textContent = currentProductData.description || '';
+        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[0]);
+        var thumbs = document.getElementById('productThumbnails');
+        thumbs.innerHTML = '';
+        currentProductData.images.forEach(function(img, i) {
+            var t = document.createElement('div');
+            t.className = 'gallery-thumbnail' + (i === 0 ? ' active' : '');
+            if (isImageUrl(img)) {
+                t.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" alt="">';
+            } else {
+                t.textContent = img;
+            }
+            t.onclick = function() { setProductImage(i); };
+            thumbs.appendChild(t);
+        });
+        document.getElementById('productDetailModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function changeProductImage(direction) {
+        if (!currentProductData) return;
+        currentImageIndex += direction;
+        if (currentImageIndex < 0) currentImageIndex = currentProductData.images.length - 1;
+        if (currentImageIndex >= currentProductData.images.length) currentImageIndex = 0;
+        setProductImage(currentImageIndex);
+    }
+
+    function setProductImage(index) {
+        if (!currentProductData) return;
+        currentImageIndex = index;
+        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[index]);
+        document.querySelectorAll('.gallery-thumbnail').forEach(function(t, i) {
+            t.classList.toggle('active', i === index);
+        });
+    }
+
+    function orderFromDetail() {
+        if (!currentProductData) return;
+        document.getElementById('productDetailModal').classList.remove('active');
+        var img = currentProductData.images ? currentProductData.images[0] : '';
+        openProductModal(currentProductData.name, currentProductData.price, img);
+    }
+
+    loadProducts();
+    </script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>
