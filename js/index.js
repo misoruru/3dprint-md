@@ -1,5 +1,143 @@
-// index.js — специфичная логика главной страницы
-// renderCarousel, openProductDetailModal и др. — в index.html
+
+        // Product Database with detailed information
+        const productDatabase = {
+            'Dragon Warrior': {
+                name: 'Воин-Дракон',
+                price: 349,
+                material: 'Фотополимерная смола',
+                size: '12-15 см',
+                time: '8-12 часов',
+                colors: 'Серый, Многоцветный',
+                description: 'Эпическая фэнтези-модель воина с детализированной драконьей броней. Идеально подходит для коллекционеров и любителей настольных игр. Высокая детализация, прочная конструкция, возможность покраски.',
+                images: ['🐉', '⚔️', '🛡️', '👑']
+            },
+            'Cyber Cat': {
+                name: 'Кибер-Кот',
+                price: 299,
+                material: 'Фотополимерная смола',
+                size: '10-12 см',
+                time: '6-10 часов',
+                colors: 'Серый, Многоцветный, LED подсветка',
+                description: 'Футуристическая модель кибер-кота с возможностью установки LED-подсветки. Современный дизайн с технологическими деталями. Отличный подарок для любителей киберпанка и sci-fi.',
+                images: ['🐱', '💡', '🤖', '✨']
+            },
+            'Space Explorer': {
+                name: 'Космический Исследователь',
+                price: 399,
+                material: 'Фотополимерная смола',
+                size: '15-18 см',
+                time: '10-14 часов',
+                colors: 'Серый, Многоцветный',
+                description: 'Детализированная фигурка астронавта с подвижными деталями. Идеально подходит для любителей космоса и научной фантастики. Шарнирные соединения позволяют менять позу.',
+                images: ['🚀', '👨‍🚀', '🌟', '🛸']
+            },
+            'Mystic Wizard': {
+                name: 'Мистический Маг',
+                price: 329,
+                material: 'Фотополимерная смола',
+                size: '13-16 см',
+                time: '9-12 часов',
+                colors: 'Серый, Многоцветный',
+                description: 'Детализированный волшебник с магическими эффектами и развевающейся мантией. Отличное дополнение к коллекции фэнтези-миниатюр. Тщательно проработанные детали одежды и аксессуаров.',
+                images: ['🧙', '✨', '🔮', '📜']
+            },
+            'Robo Buddy': {
+                name: 'Робо-Друг',
+                price: 279,
+                material: 'Фотополимерная смола',
+                size: '8-10 см',
+                time: '5-8 часов',
+                colors: 'Серый, Многоцветный',
+                description: 'Милый робот-компаньон с шарнирными соединениями. Идеальный настольный сувенир или подарок для детей. Прочная конструкция, подвижные части.',
+                images: ['🤖', '💙', '⚙️', '🔧']
+            },
+            'Skull Guardian': {
+                name: 'Страж-Череп',
+                price: 349,
+                material: 'Фотополимерная смола',
+                size: '12-14 см',
+                time: '8-11 часов',
+                colors: 'Серый, Многоцветный',
+                description: 'Мрачная и детализированная модель стража с черепом. Отличное украшение для любителей готического стиля. Высокая детализация костей и доспехов.',
+                images: ['💀', '⚔️', '🗡️', '⛓️']
+            }
+        };
+
+        let currentProductData = null;
+        let currentImageIndex = 0;
+
+        // Open Product Detail Modal (when clicking on card)
+        function openProductDetailModal(productKey) {
+            currentProductData = productDatabase[productKey];
+            if (!currentProductData) return;
+
+            currentImageIndex = 0;
+            
+            document.getElementById('productDetailTitle').textContent = currentProductData.name;
+            document.getElementById('productDetailPrice').textContent = currentProductData.price + ' MDL';
+            document.getElementById('productMaterial').textContent = currentProductData.material;
+            document.getElementById('productSize').textContent = currentProductData.size;
+            document.getElementById('productTime').textContent = currentProductData.time;
+            document.getElementById('productColors').textContent = currentProductData.colors;
+            document.getElementById('productDetailDescription').textContent = currentProductData.description;
+            
+            // Update main image
+            document.getElementById('productDetailMainImage').textContent = currentProductData.images[0];
+            
+            // Create thumbnails
+            const thumbnailsContainer = document.getElementById('productThumbnails');
+            thumbnailsContainer.innerHTML = '';
+            currentProductData.images.forEach((image, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'gallery-thumbnail' + (index === 0 ? ' active' : '');
+                thumb.textContent = image;
+                thumb.onclick = () => setProductImage(index);
+                thumbnailsContainer.appendChild(thumb);
+            });
+            
+            document.getElementById('productDetailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Change product image in gallery
+        function changeProductImage(direction) {
+            if (!currentProductData) return;
+            
+            currentImageIndex += direction;
+            if (currentImageIndex < 0) currentImageIndex = currentProductData.images.length - 1;
+            if (currentImageIndex >= currentProductData.images.length) currentImageIndex = 0;
+            
+            setProductImage(currentImageIndex);
+        }
+
+        // Set specific product image
+        function setProductImage(index) {
+            if (!currentProductData) return;
+            
+            currentImageIndex = index;
+            document.getElementById('productDetailMainImage').textContent = currentProductData.images[index];
+            
+            // Update thumbnails active state
+            const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+            thumbnails.forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+        }
+
+        // Order from detail modal (goes directly to order form)
+        function orderFromDetail() {
+            if (!currentProductData) return;
+            
+            // Close detail modal
+            document.getElementById('productDetailModal').classList.remove('active');
+            
+            // Use openProductModal so preview is filled correctly
+            const emoji = currentProductData.images ? currentProductData.images[0] : '';
+            openProductModal(currentProductData.name, currentProductData.price, emoji);
+        }
+
+        // Modified order button to go directly to order form
+
 
         // FAQ Toggle
         function toggleFaq(element) {
@@ -536,3 +674,4 @@
         }
 
         animate();
+    

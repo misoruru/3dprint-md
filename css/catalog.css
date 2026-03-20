@@ -645,7 +645,8 @@
             height: 500px;
             display: flex;
             align-items: center;
-            justify-content: center;font-size: 8rem;
+            justify-content: center;
+            font-size: 15rem;
             background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 0, 255, 0.1));
             border-radius: 20px;
             border: 2px solid rgba(0, 240, 255, 0.3);
@@ -682,13 +683,6 @@
 
         .gallery-nav-btn.next {
             right: 1rem;
-        }
-
-        .product-main-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 18px;
         }
 
         .gallery-thumbnails {
@@ -838,7 +832,8 @@
             }
 
             .product-main-image {
-                height: 400px;font-size: 8rem;
+                height: 400px;
+                font-size: 12rem;
             }
         }
 
@@ -864,7 +859,8 @@
             }
 
             .product-main-image {
-                height: 300px;font-size: 8rem;
+                height: 300px;
+                font-size: 10rem;
             }
 
             .gallery-thumbnail {

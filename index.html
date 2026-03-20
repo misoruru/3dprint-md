@@ -128,7 +128,77 @@
             </button>
             
             <div class="carousel" id="productCarousel">
-                <!-- Карточки генерируются из productDatabase (js/products.js) -->
+                <div class="product-card" data-product-key="Dragon Warrior" data-price="349" onclick="openProductDetailModal('Dragon Warrior')">
+                    <div class="product-image">🐉</div>
+                    <div class="product-info">
+                        <div class="product-name">Воин-Дракон</div>
+                        <div class="product-desc">Эпическая фэнтези-модель с детализированной броней</div>
+                        <div class="product-footer">
+                            <div class="price">349 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Воин-Дракон', 349, '🐉')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-key="Cyber Cat" data-price="299" onclick="openProductDetailModal('Cyber Cat')">
+                    <div class="product-image">🐱</div>
+                    <div class="product-info">
+                        <div class="product-name">Кибер-Кот</div>
+                        <div class="product-desc">Футуристическая модель с возможностью LED-подсветки</div>
+                        <div class="product-footer">
+                            <div class="price">299 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Кибер-Кот', 299, '🐱')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-key="Space Explorer" data-price="399" onclick="openProductDetailModal('Space Explorer')">
+                    <div class="product-image">🚀</div>
+                    <div class="product-info">
+                        <div class="product-name">Космический Исследователь</div>
+                        <div class="product-desc">Фигурка астронавта с подвижными деталями</div>
+                        <div class="product-footer">
+                            <div class="price">399 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Космический Исследователь', 399, '🚀')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-key="Mystic Wizard" data-price="329" onclick="openProductDetailModal('Mystic Wizard')">
+                    <div class="product-image">🧙</div>
+                    <div class="product-info">
+                        <div class="product-name">Мистический Маг</div>
+                        <div class="product-desc">Детализированный волшебник с магическими эффектами</div>
+                        <div class="product-footer">
+                            <div class="price">329 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Мистический Маг', 329, '🧙')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-key="Robo Buddy" data-price="279" onclick="openProductDetailModal('Robo Buddy')">
+                    <div class="product-image">🤖</div>
+                    <div class="product-info">
+                        <div class="product-name">Робо-Друг</div>
+                        <div class="product-desc">Милый робот-компаньон с шарнирными соединениями</div>
+                        <div class="product-footer">
+                            <div class="price">279 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Робо-Друг', 279, '🤖')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-key="Skull Guardian" data-price="349" onclick="openProductDetailModal('Skull Guardian')">
+                    <div class="product-image">💀</div>
+                    <div class="product-info">
+                        <div class="product-name">Страж-Череп</div>
+                        <div class="product-desc">Готический дизайн с кристальными акцентами</div>
+                        <div class="product-footer">
+                            <div class="price">349 MDL</div>
+                            <button class="order-btn" onclick="event.stopPropagation(); openProductModal('Страж-Череп', 349, '💀')">Заказать</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -577,137 +647,6 @@
         </div>
     </div>
 
-    <script>
-    var currentProductData = null;
-    var currentImageIndex  = 0;
-
-    function isImageUrl(str) {
-        return str && (str.startsWith('data:') || str.startsWith('http') ||
-                       str.startsWith('/') || str.startsWith('images/'));
-    }
-
-    function renderImageInto(el, img) {
-        if (!el) return;
-        if (isImageUrl(img)) {
-            el.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="">';
-        } else {
-            el.innerHTML = '';
-            el.textContent = img || '';
-        }
-    }
-
-    function renderCarousel() {
-        var carousel = document.getElementById('productCarousel');
-        if (!carousel) return;
-        var html = '';
-        Object.keys(productDatabase).forEach(function(key) {
-            var p = productDatabase[key];
-            if (p.featured === false) return;
-            var img = (p.images && p.images[0]) || '';
-            var imgHtml = isImageUrl(img)
-                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
-                : '<span style="font-size:5rem">' + (img || '') + '</span>';
-            var desc = (p.description || '').slice(0, 60) + '...';
-            html += '<div class="product-card" data-product-key="' + key + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
-                  + '<div class="product-image">' + imgHtml + '</div>'
-                  + '<div class="product-info">'
-                  + '<div class="product-name">' + p.name + '</div>'
-                  + '<div class="product-desc">' + desc + '</div>'
-                  + '<div class="product-footer">'
-                  + '<div class="price">' + p.price + ' MDL</div>'
-                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openProductModal(p.name,p.price,isImageUrl(p.images[0])?p.images[0]:p.images[0])">Заказать</button>'
-                  + '</div></div></div>';
-        });
-        carousel.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
-    }
-
-    function renderProductsGrid() {
-        var grid = document.getElementById('productsGrid');
-        if (!grid) return;
-        var keys = Object.keys(productDatabase);
-        var html = '';
-        keys.forEach(function(key) {
-            var p = productDatabase[key];
-            var img = (p.images && p.images[0]) || '';
-            var imgHtml = isImageUrl(img)
-                ? '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
-                : '<span style="font-size:5rem">' + (img || '') + '</span>';
-            var genre = p.genre || 'other';
-            html += '<div class="product-card" data-product-key="' + key + '" data-genre="' + genre + '" data-price="' + p.price + '" onclick="openProductDetailModal(this.getAttribute('data-product-key'))">'
-                  + '<div class="product-image">' + imgHtml + '</div>'
-                  + '<div class="product-info">'
-                  + '<span class="product-tag">' + genre + '</span>'
-                  + '<div class="product-name">' + p.name + '</div>'
-                  + '<div class="product-description">' + (p.description || '') + '</div>'
-                  + '<div class="product-meta">'
-                  + '<div class="meta-item"><span>📏</span><span>' + (p.size || '—') + '</span></div>'
-                  + '<div class="meta-item"><span>⏱️</span><span>' + (p.time || '—') + '</span></div>'
-                  + '</div>'
-                  + '<div class="product-footer">'
-                  + '<span class="price">' + p.price + ' MDL</span>'
-                  + '<button class="order-btn" data-key="' + key + '" onclick="event.stopPropagation();var k=this.getAttribute('data-key');var p=productDatabase[k];openOrderModal(p.name,p.price,p.images[0])">Заказать</button>'
-                  + '</div></div></div>';
-        });
-        grid.innerHTML = html || '<p style="color:#666;padding:2rem">Нет товаров</p>';
-        var rc = document.getElementById('resultsCount');
-        if (rc) rc.textContent = keys.length;
-    }
-
-    function openProductDetailModal(productKey) {
-        currentProductData = productDatabase[productKey];
-        if (!currentProductData) return;
-        currentImageIndex = 0;
-        document.getElementById('productDetailTitle').textContent       = currentProductData.name;
-        document.getElementById('productDetailPrice').textContent       = currentProductData.price + ' MDL';
-        document.getElementById('productMaterial').textContent          = currentProductData.material   || '';
-        document.getElementById('productSize').textContent              = currentProductData.size        || '';
-        document.getElementById('productTime').textContent              = currentProductData.time        || '';
-        document.getElementById('productColors').textContent            = currentProductData.colors      || '';
-        document.getElementById('productDetailDescription').textContent = currentProductData.description || '';
-        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[0]);
-        var thumbs = document.getElementById('productThumbnails');
-        thumbs.innerHTML = '';
-        currentProductData.images.forEach(function(img, i) {
-            var t = document.createElement('div');
-            t.className = 'gallery-thumbnail' + (i === 0 ? ' active' : '');
-            if (isImageUrl(img)) {
-                t.innerHTML = '<img src="' + img + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" alt="">';
-            } else {
-                t.textContent = img;
-            }
-            t.onclick = function() { setProductImage(i); };
-            thumbs.appendChild(t);
-        });
-        document.getElementById('productDetailModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function changeProductImage(direction) {
-        if (!currentProductData) return;
-        currentImageIndex += direction;
-        if (currentImageIndex < 0) currentImageIndex = currentProductData.images.length - 1;
-        if (currentImageIndex >= currentProductData.images.length) currentImageIndex = 0;
-        setProductImage(currentImageIndex);
-    }
-
-    function setProductImage(index) {
-        if (!currentProductData) return;
-        currentImageIndex = index;
-        renderImageInto(document.getElementById('productDetailMainImage'), currentProductData.images[index]);
-        document.querySelectorAll('.gallery-thumbnail').forEach(function(t, i) {
-            t.classList.toggle('active', i === index);
-        });
-    }
-
-    function orderFromDetail() {
-        if (!currentProductData) return;
-        document.getElementById('productDetailModal').classList.remove('active');
-        var img = currentProductData.images ? currentProductData.images[0] : '';
-        openProductModal(currentProductData.name, currentProductData.price, img);
-    }
-
-    loadProducts();
-    </script>
     <script src="js/index.js"></script>
 </body>
 </html>
