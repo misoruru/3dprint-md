@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог моделей - 3Dprint MD</title>
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+</head>
+<body>
+    <canvas id="starryCanvas"></canvas>
+    <div class="bg-gradient"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="{% url 'index' %}" class="logo">3Dprint MD</a>
+            <ul class="nav-links">
+                <li><a href="{% url 'index' %}">Главная</a></li>
+                <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                <li><a href="#">Услуги</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a href="#">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="catalog-container">
+        <div class="catalog-header">
+            <h1>Каталог 3D моделей</h1>
+            <p>Эксклюзивные фигурки и модели высочайшего качества</p>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Сортировка</label>
+                    <select id="sortFilter" onchange="applyFilters()">
+                        <option value="popular">Популярные</option>
+                        <option value="price-low">Цена: по возрастанию</option>
+                        <option value="price-high">Цена: по убыванию</option>
+                        <option value="name">По названию</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Цена</label>
+                    <select id="priceFilter" onchange="applyFilters()">
+                        <option value="all">Все цены</option>
+                        <option value="0-300">До 300 MDL</option>
+                        <option value="300-400">300-400 MDL</option>
+                        <option value="400+">От 400 MDL</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Размер</label>
+                    <select id="sizeFilter" onchange="applyFilters()">
+                        <option value="all">Все размеры</option>
+                        <option value="small">Маленький (до 10см)</option>
+                        <option value="medium">Средний (10-15см)</option>
+                        <option value="large">Большой (15см+)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Категория</label>
+                <div class="genre-filter">
+                    <button class="genre-btn active" onclick="selectGenre(this, 'all')">Все</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'fantasy')">Фэнтези</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'scifi')">Sci-Fi</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'cute')">Милые</button>
+                    <button class="genre-btn" onclick="selectGenre(this, 'dark')">Мрачные</button>
+                </div>
+            </div>
+            <button class="reset-btn" onclick="resetFilters()">Сбросить фильтры</button>
+        </div>
+
+        <div class="results-counter">
+            <span>Найдено моделей: <span class="count" id="resultsCount">...</span></span>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <p style="color:#aaa;text-align:center;padding:2rem;">Загрузка...</p>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal" id="productDetailModal">
+        <div class="modal-content product-detail-modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <div class="product-detail-container">
+                <div class="product-detail-gallery">
+                    <div class="product-main-image" id="productDetailMainImage">🐉</div>
+                    <button class="gallery-nav-btn prev" onclick="changeProductImage(-1)">‹</button>
+                    <button class="gallery-nav-btn next" onclick="changeProductImage(1)">›</button>
+                    <div class="gallery-thumbnails" id="productThumbnails"></div>
+                </div>
+                <div class="product-detail-info">
+                    <h2 class="product-detail-title" id="productDetailTitle"></h2>
+                    <div class="product-detail-price" id="productDetailPrice"></div>
+                    <div class="product-detail-specs">
+                        <div class="product-spec-item"><span class="product-spec-label">Материал:</span><span class="product-spec-value" id="productMaterial"></span></div>
+                        <div class="product-spec-item"><span class="product-spec-label">Размер:</span><span class="product-spec-value" id="productSize"></span></div>
+                        <div class="product-spec-item"><span class="product-spec-label">Время печати:</span><span class="product-spec-value" id="productTime"></span></div>
+                        <div class="product-spec-item"><span class="product-spec-label">Цвета:</span><span class="product-spec-value" id="productColors"></span></div>
+                    </div>
+                    <div class="product-detail-description" id="productDetailDescription"></div>
+                    <div class="product-detail-actions">
+                        <button class="product-detail-btn primary" onclick="orderFromDetail()">🛒 Заказать сейчас</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeAllModals()">&times;</button>
+            <h3>Заказ модели</h3>
+            <div style="display:flex;align-items:center;gap:1.2rem;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.25);border-radius:16px;padding:1rem 1.4rem;margin-bottom:1.8rem;">
+                <div id="productPreviewEmoji" style="font-size:3rem;line-height:1;"></div>
+                <div>
+                    <div id="productPreviewName" style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:0.25rem;"></div>
+                    <div style="font-size:0.9rem;color:var(--text-secondary);">Базовая цена: <span id="productPreviewPrice" style="color:var(--primary-neon);font-weight:600;"></span> MDL</div>
+                </div>
+            </div>
+            <div id="productForm">
+                <div class="form-group" style="display:none;">
+                    <input type="text" id="productName" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Цвет</label>
+                    <select id="productColor" onchange="updateProductPrice()">
+                        <option value="gray">Серый (стандарт)</option>
+                        <option value="multicolor">Разноцветный (+150 MDL, ручная покраска)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Заполнение</label>
+                    <select id="productFill" onchange="updateProductPrice()">
+                        <option value="lattice">Решётка (экономия материала)</option>
+                        <option value="solid">Полное заполнение (+100 MDL, максимальная прочность)</option>
+                    </select>
+                </div>
+                <!-- Выбор фото — появляется только если у товара есть selectable фото -->
+                <div class="form-group" id="photoChoiceGroup" style="display:none;">
+                    <label>📸 Выберите вариант фото</label>
+                    <div id="photoChoiceGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.6rem;margin-top:0.5rem;"></div>
+                    <input type="hidden" id="chosenPhoto" value="">
+                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.4rem;">Нажмите на фото чтобы выбрать</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customerName" placeholder="Введите ваше имя">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="customerPhone" placeholder="+373 ...">
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="customerAddress" placeholder="Город, улица, дом">
+                </div>
+                <div class="form-group">
+                    <label>Особые пожелания (опционально)</label>
+                    <textarea id="customerNotes" rows="3" placeholder="Особые детали, модификации..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--primary-neon);">Итого: <span id="productPrice"></span> MDL</label>
+                </div>
+                <button class="submit-btn" onclick="submitOrder(event)">Подтвердить заказ</button>
+            </div>
+        </div>
+    </div>
+
+
+<!-- ═══ Плавающая кнопка контактов ═══ -->
+<div class="fab-wrap" id="fabWrap">
+  <div class="fab-menu" id="fabMenu">
+    <a class="fab-item fab-phone"   href="tel:+37360983883"                           title="Позвонить">
+      <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg>
+    </a>
+    <a class="fab-item fab-viber"   href="viber://chat?number=%2B37360983883"         title="Viber">
+      <svg viewBox="0 0 24 24"><path d="M11.4 2C6.27 2 2 6 2 11c0 2.7 1.15 5.13 3 6.83V21l3.4-1.87A9.08 9.08 0 0011.4 20C16.53 20 21 16 21 11S16.53 2 11.4 2zm5.2 13.2c-.23.62-.95 1.14-1.63 1.27-.44.09-1.02.16-2.96-.64C9.1 14.7 7.08 12.36 6.5 11.6a5.4 5.4 0 01-1.11-2.85c0-.75.28-1.4.76-1.89A1 1 0 016.84 6.6c.08 0 .16 0 .23.01.2.01.4.05.58.47l.72 1.8c.1.26.03.55-.16.77l-.36.44c-.19.23-.22.54-.07.8.55 1 1.3 1.87 2.24 2.53.28.19.62.17.88-.05l.4-.35c.2-.18.49-.26.75-.16l1.9.76c.43.17.47.37.46.56-.01.28-.05.52-.21.82z"/></svg>
+    </a>
+    <a class="fab-item fab-telegram" href="https://t.me/Print3dmd_bot"                title="Telegram">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8.02c-.12.56-.46.7-.93.43l-2.57-1.9-1.24 1.19c-.14.14-.26.26-.53.26l.19-2.6 4.84-4.37c.21-.19-.05-.29-.33-.1L7.1 14.53l-2.5-.78c-.54-.17-.55-.54.11-.8l9.75-3.76c.45-.16.84.11.69.8-.01.01-.01.01-.01.01z"/></svg>
+    </a>
+    <a class="fab-item fab-instagram" href="https://www.instagram.com/3dprint.page/" target="_blank" title="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+    </a>
+  </div>
+  <button class="fab-main" id="fabMain" onclick="toggleFab()" title="Контакты">
+    <svg class="fab-icon-phone" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg>
+    <svg class="fab-icon-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<style>
+.fab-wrap{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:12px}
+.fab-main{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#00c6ff,#0072ff);box-shadow:0 4px 20px rgba(0,114,255,.5);display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;position:relative;overflow:hidden}
+.fab-main svg{width:26px;height:26px;fill:white;position:absolute;transition:opacity .25s,transform .25s}
+.fab-icon-close{opacity:0;transform:rotate(-90deg)}
+.fab-open .fab-icon-phone{opacity:0;transform:rotate(90deg)}
+.fab-open .fab-icon-close{opacity:1;transform:rotate(0)}
+.fab-main:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(0,114,255,.65)}
+/* Вибрация — привлечь внимание */
+@keyframes fabShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-4px) rotate(-5deg)}30%{transform:translateX(4px) rotate(5deg)}45%{transform:translateX(-3px) rotate(-3deg)}60%{transform:translateX(3px) rotate(3deg)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
+.fab-shake{animation:fabShake .6s ease-in-out}
+/* Пульсирующее кольцо */
+@keyframes fabPulse{0%{box-shadow:0 0 0 0 rgba(0,114,255,.5)}70%{box-shadow:0 0 0 14px rgba(0,114,255,0)}100%{box-shadow:0 0 0 0 rgba(0,114,255,0)}}
+.fab-pulse{animation:fabPulse 1.4s ease-out infinite}
+/* Меню */
+.fab-menu{display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .25s,transform .25s;opacity:0;transform:translateY(10px);pointer-events:none}
+.fab-open .fab-menu{opacity:1;transform:translateY(0);pointer-events:all}
+.fab-item{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.4);transition:transform .2s,box-shadow .2s;text-decoration:none}
+.fab-item:hover{transform:scale(1.12);box-shadow:0 5px 18px rgba(0,0,0,.5)}
+.fab-item svg{width:22px;height:22px;fill:white}
+.fab-phone{background:#25d366}
+.fab-telegram{background:#2CA5E0}
+.fab-instagram{background:radial-gradient(circle at 30% 110%,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)}
+.fab-viber{background:#7b519d}
+/* tooltip при hover */
+.fab-item{position:relative}
+.fab-item::before{content:attr(title);position:absolute;right:54px;background:rgba(0,0,0,.75);color:#fff;font-size:12px;white-space:nowrap;padding:3px 8px;border-radius:6px;opacity:0;transition:opacity .2s;pointer-events:none}
+.fab-item:hover::before{opacity:1}
+@media(max-width:480px){.fab-wrap{bottom:18px;right:16px}}
+</style>
+
+<script>
+(function(){
+  var wrap = document.getElementById("fabWrap");
+  var main = document.getElementById("fabMain");
+  var open = false;
+
+  function toggleFab(){
+    open = !open;
+    wrap.classList.toggle("fab-open", open);
+    // Убираем пульс при первом открытии
+    main.classList.remove("fab-pulse","fab-shake");
+  }
+  window.toggleFab = toggleFab;
+
+  // Закрыть при клике вне
+  document.addEventListener("click", function(e){
+    if(open && !wrap.contains(e.target)){ open=false; wrap.classList.remove("fab-open"); }
+  });
+
+  // Через 10 секунд — вибрация + пульс
+  setTimeout(function(){
+    main.classList.add("fab-shake");
+    setTimeout(function(){ main.classList.add("fab-pulse"); }, 700);
+  }, 10000);
+})();
+</script>
+<!-- ═══════════════════════════════════════ -->
+
+    <script src="{% static 'js/starry-bg.js' %}"></script>
+    <script src="{% static 'js/catalog.js' %}"></script>
+</body>
+</html>
